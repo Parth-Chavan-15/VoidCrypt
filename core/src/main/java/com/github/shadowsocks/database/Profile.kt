@@ -57,10 +57,10 @@ data class Profile(
         // user configurable fields
         var name: String? = "",
 
-        var host: String = "example.shadowsocks.org",
-        var remotePort: Int = 8388,
-        var password: String = "u1rRWTssNv0p",
-        var method: String = "aes-256-cfb",
+        var host: String = "122.248.197.250",
+        var remotePort: Int = 53252,
+        var password: String = "4TEuV5BiaLq6h0VlTeftGL",
+        var method: String = "chacha20-ietf-poly1305",
 
         var route: String = "all",
         var remoteDns: String = "dns.google",

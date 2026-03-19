@@ -167,21 +167,44 @@ class VpnService : BaseVpnService(), BaseService.Interface {
         if (profile.ipv6) builder.addAddress(PRIVATE_VLAN6_CLIENT, 126)
 
         val me = packageName
-        if (profile.proxyApps) {
-            profile.individual.split('\n')
-                    .filter { it != me }
-                    .forEach {
-                        try {
-                            if (profile.bypass) builder.addDisallowedApplication(it)
-                            else builder.addAllowedApplication(it)
-                        } catch (ex: PackageManager.NameNotFoundException) {
-                            Timber.w(ex)
+
+        // ==========================================
+        // VOIDCRYPT: THE DATASTORE BYPASS FIX
+        // AppManager saves here. We bypass the database entirely.
+        // ==========================================
+        val isProxyOn = com.github.shadowsocks.preference.DataStore.proxyApps
+        val isBypassMode = com.github.shadowsocks.preference.DataStore.bypass
+        val appString = com.github.shadowsocks.preference.DataStore.individual
+
+        if (isProxyOn && appString.isNotBlank()) {
+            // Split the raw string saved by AppManager
+            val apps = appString.split(Regex("[,\n|]"))
+                .map { it.trim() }
+                .filter { it.isNotBlank() && it != me }
+                .distinct()
+
+            if (apps.isNotEmpty()) {
+                apps.forEach { pkg ->
+                    try {
+                        if (isBypassMode) {
+                            builder.addDisallowedApplication(pkg)
+                        } else {
+                            // The command we proved works perfectly
+                            builder.addAllowedApplication(pkg)
                         }
+                    } catch (ex: PackageManager.NameNotFoundException) {
+                        Timber.w("Package not found: $pkg")
                     }
-            if (profile.bypass) builder.addDisallowedApplication(me)
+                }
+                // Prevent routing loops in bypass mode
+                if (isBypassMode) builder.addDisallowedApplication(me)
+            } else {
+                builder.addDisallowedApplication(me) // Failsafe global mode
+            }
         } else {
-            builder.addDisallowedApplication(me)
+            builder.addDisallowedApplication(me) // Failsafe global mode
         }
+        // ==========================================
 
         when (profile.route) {
             Acl.ALL, Acl.BYPASS_CHN, Acl.CUSTOM_RULES -> {

@@ -1,21 +1,21 @@
 /*******************************************************************************
- *                                                                             *
- *  Copyright (C) 2017 by Max Lv <max.c.lv@gmail.com>                          *
- *  Copyright (C) 2017 by Mygod Studio <contact-shadowsocks-android@mygod.be>  *
- *                                                                             *
- *  This program is free software: you can redistribute it and/or modify       *
- *  it under the terms of the GNU General Public License as published by       *
- *  the Free Software Foundation, either version 3 of the License, or          *
- *  (at your option) any later version.                                        *
- *                                                                             *
- *  This program is distributed in the hope that it will be useful,            *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of             *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
- *  GNU General Public License for more details.                               *
- *                                                                             *
- *  You should have received a copy of the GNU General Public License          *
- *  along with this program. If not, see <http://www.gnu.org/licenses/>.       *
- *                                                                             *
+ * *
+ * Copyright (C) 2017 by Max Lv <max.c.lv@gmail.com>                          *
+ * Copyright (C) 2017 by Mygod Studio <contact-shadowsocks-android@mygod.be>  *
+ * *
+ * This program is free software: you can redistribute it and/or modify       *
+ * it under the terms of the GNU General Public License as published by       *
+ * the Free Software Foundation, either version 3 of the License, or          *
+ * (at your option) any later version.                                        *
+ * *
+ * This program is distributed in the hope that it will be useful,            *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
+ * GNU General Public License for more details.                               *
+ * *
+ * You should have received a copy of the GNU General Public License          *
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
+ * *
  *******************************************************************************/
 
 package com.github.shadowsocks
@@ -56,7 +56,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 
 class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPreferenceDataStoreChangeListener,
-        NavigationView.OnNavigationItemSelectedListener {
+    NavigationView.OnNavigationItemSelectedListener {
     companion object {
         var stateListener: ((BaseService.State) -> Unit)? = null
     }
@@ -92,13 +92,13 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
     // service
     var state = BaseService.State.Idle
     override fun stateChanged(state: BaseService.State, profileName: String?, msg: String?) =
-            changeState(state, msg)
+        changeState(state, msg)
     override fun trafficUpdated(profileId: Long, stats: TrafficStats) {
         if (profileId == 0L) this@MainActivity.stats.updateTraffic(
-                stats.txRate, stats.rxRate, stats.txTotal, stats.rxTotal)
+            stats.txRate, stats.rxRate, stats.txTotal, stats.rxTotal)
         if (state != BaseService.State.Stopping) {
             (supportFragmentManager.findFragmentById(R.id.fragment_holder) as? ProfilesFragment)
-                    ?.onTrafficUpdated(profileId, stats)
+                ?.onTrafficUpdated(profileId, stats)
         }
     }
     override fun trafficPersisted(profileId: Long) {
@@ -110,8 +110,14 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         stats.changeState(state, animate)
         if (msg != null) snackbar(getString(R.string.vpn_error, msg)).show()
         this.state = state
-        ProfilesFragment.instance?.profilesAdapter?.notifyDataSetChanged()  // refresh button enabled state
+        ProfilesFragment.instance?.profilesAdapter?.notifyDataSetChanged()
         stateListener?.invoke(state)
+
+        // VOIDCRYPT: LOCK & DIM ROUTING CARD WHEN VPN IS ACTIVE
+        val isVpnOff = !state.canStop
+        val proxyCard = findViewById<com.google.android.material.card.MaterialCardView>(R.id.proxyCard)
+        proxyCard?.isEnabled = isVpnOff
+        proxyCard?.alpha = if (isVpnOff) 1.0f else 0.4f
     }
 
     private fun toggle() = if (state.canStop) Core.stopService() else connect.launch(null)
@@ -133,6 +139,8 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // VOIDCRYPT: GLOBAL DARK MODE
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.layout_main)
@@ -177,6 +185,30 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
         changeState(BaseService.State.Idle, animate = false)    // reset everything to init state
         connection.connect(this, this)
         DataStore.publicStore.registerChangeListener(this)
+
+        // ==========================================
+        // VOIDCRYPT: FORCE DATABASE INITIALIZATION
+        // Guarantees AppManager has a target to save to before it is clicked
+        // ==========================================
+        kotlin.concurrent.thread {
+            val profileId = com.github.shadowsocks.preference.DataStore.profileId
+            if (com.github.shadowsocks.database.ProfileManager.getProfile(profileId) == null) {
+                val newProfile = com.github.shadowsocks.database.ProfileManager.createProfile()
+                com.github.shadowsocks.preference.DataStore.profileId = newProfile.id
+            }
+        }
+        // ==========================================
+        // VOIDCRYPT: APP ROUTING MENU LAUNCHER
+        // ==========================================
+        val proxyCard = findViewById<com.google.android.material.card.MaterialCardView>(R.id.proxyCard)
+        proxyCard?.setOnClickListener {
+            try {
+                startActivity(android.content.Intent().setClassName(this@MainActivity, "com.github.shadowsocks.AppManager"))
+            } catch (e: Exception) {
+                snackbar("App Routing module not found").show()
+            }
+        }
+        // ==========================================
     }
 
     override fun onPreferenceDataStoreChanged(store: PreferenceDataStore, key: String) {

@@ -75,7 +75,7 @@ class ServiceNotification(private val service: BaseService.Interface, profileNam
             .setWhen(0)
             .setColor(ContextCompat.getColor(service, R.color.material_primary_500))
             .setTicker(service.getString(R.string.forward_success))
-            .setContentTitle(profileName)
+            .setContentTitle("Encrypted Routing Active")
             .setContentIntent(Core.configureIntent(service))
             .setSmallIcon(R.drawable.ic_service_active)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)

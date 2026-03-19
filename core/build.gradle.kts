@@ -57,8 +57,8 @@ cargo {
     exec = { spec, toolchain ->
         run {
             try {
-                Runtime.getRuntime().exec(arrayOf("python3", "-V"))
-                spec.environment("RUST_ANDROID_GRADLE_PYTHON_COMMAND", "python3")
+                Runtime.getRuntime().exec(arrayOf("python", "-V"))
+                spec.environment("RUST_ANDROID_GRADLE_PYTHON_COMMAND", "python")
                 project.logger.lifecycle("Python 3 detected.")
             } catch (e: java.io.IOException) {
                 project.logger.lifecycle("No python 3 detected.")
