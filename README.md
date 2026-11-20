@@ -50,19 +50,38 @@ VoidCrypt is built on top of the open-source **shadowsocks-android** (v5.3.5) co
 
 ## 🧩 Architecture & Flowcharts
 
-<details open>
+> [!TIP]
+> **Interactive Architecture Blueprints:** Click the diagrams below to expand full-color flowcharts detailing kernel-level split-tunneling and the live tunnel safety lock.
+
+<details>
 <summary><b>🔍 Expand Flowchart: Traffic & Split-Tunneling Pipeline</b></summary>
 
 ```mermaid
 flowchart TD
-    App["Device Applications"] --> Filter{"Omni-Scavenger Engine\n(In-Memory App Rules)"}
+    App["📱 Device Applications"] --> Filter{"⚡ Omni-Scavenger Filter<br><i>(In-Memory App Rules)</i>"}
     
-    Filter -- "Unselected Apps (Games, Streaming, Local)" --> Direct["Direct Local Network\n(Full Speed / Zero Latency)"]
-    Filter -- "Selected Apps (Targeted Tools)" --> Tun["Virtual TUN Interface\n(tun0)"]
+    Filter -- "Unselected Apps (Games, Media, Banking)" --> Direct["🚀 Direct Local Network<br><i>(Zero Latency / Full Wi-Fi Speed)</i>"]
+    Filter -- "Selected Apps (Targeted Tools)" --> Tun["🛡️ Virtual TUN Interface<br><i>(Android tun0 Adapter)</i>"]
     
-    Tun --> Native["Native Core (C++ / Rust)\ntun2socks + sslocal"]
-    Native -->|"ChaCha20-Poly1305 Encrypted Stream"| Cloud["Dedicated Cloud Nexus Node\n(AWS EC2)"]
-    Cloud --> Internet["Target Web Services"]
+    Tun --> Native["⚙️ Native Engine (C++ / Rust)<br><i>(tun2socks + sslocal)</i>"]
+    Native -->|"🔐 ChaCha20-Poly1305 Encrypted Stream"| Cloud["☁️ Dedicated Cloud Nexus Node<br><i>(AWS EC2)</i>"]
+    Cloud --> Internet["🌐 Target Web Services"]
+
+    classDef appStyle fill:#161b22,stroke:#58a6ff,stroke-width:2px,color:#ffffff;
+    classDef filterStyle fill:#28103a,stroke:#e25a92,stroke-width:2.5px,color:#ffffff;
+    classDef directStyle fill:#0d2818,stroke:#2ea043,stroke-width:2px,color:#ffffff;
+    classDef tunStyle fill:#141738,stroke:#7952ff,stroke-width:2px,color:#ffffff;
+    classDef nativeStyle fill:#1f1338,stroke:#bc52ff,stroke-width:2px,color:#ffffff;
+    classDef cloudStyle fill:#2d1700,stroke:#ff9900,stroke-width:2px,color:#ffffff;
+    classDef netStyle fill:#041c2c,stroke:#00d2ff,stroke-width:2px,color:#ffffff;
+
+    class App appStyle;
+    class Filter filterStyle;
+    class Direct directStyle;
+    class Tun tunStyle;
+    class Native nativeStyle;
+    class Cloud cloudStyle;
+    class Internet netStyle;
 ```
 
 </details>
@@ -71,26 +90,43 @@ flowchart TD
 <summary><b>🔍 Expand Flowchart: Tunnel Lifecycle & UI Safety Lock</b></summary>
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Standby: App Launch (AMOLED HUD Ready)
-    
-    Standby --> Connecting: Tap Central Nexus FAB
-    Connecting --> Active: Tunnel Established & Encrypted
-    
-    state Active {
-        [*] --> TunnelLive
-        TunnelLive: Traffic Encrypted (ChaCha20-Poly1305)
-        TunnelLive: Notification Masked ("Encrypted Routing Active")
-        TunnelLive: Real-Time Speed Telemetry Streaming
-        note right of TunnelLive
-            ACTIVE SAFETY GUARD:
-            App Routing Card disabled & dimmed (40% alpha)
-            Prevents in-flight routing desync
-        end note
-    }
-    
-    Active --> Disconnecting: Tap Nexus FAB
-    Disconnecting --> Standby: Controls Restored & Idle
+flowchart TD
+    subgraph Standby_State["🔴 State: Standby (Idle)"]
+        S1["📱 Obsidian AMOLED HUD Ready"]
+        S2["App Routing Card: ENABLED (Alpha 1.0)"]
+        S3["Telemetry: 0 B/s Idle"]
+    end
+
+    subgraph Transition_1["⚡ One-Tap Connect Transition"]
+        T1["👆 User Taps Central Nexus FAB"]
+        T2["⚙️ VpnService Direct-Memory Rule Injection"]
+        T3["🔐 Passing TUN FD to Native C++ tun2socks & Rust sslocal"]
+    end
+
+    subgraph Active_State["🟢 State: Encrypted Tunnel Active"]
+        A1["🛡️ ChaCha20-Poly1305 Cryptographic Tunnel Live"]
+        A2["🔏 Notification Masked: 'Encrypted Routing Active'"]
+        A3["📊 Real-Time Throughput Telemetry Streaming (Tx/Rx)"]
+        A4["🔒 ACTIVE SAFETY GUARD: App Routing Card LOCKED & DIMMED (40% Alpha)"]
+    end
+
+    subgraph Transition_2["🛑 Disconnect Transition"]
+        D1["👆 User Taps Nexus FAB or System Revokes VPN"]
+        D2["Process Pool SIGKILL & File Descriptor Teardown"]
+    end
+
+    Standby_State --> T1 --> T2 --> T3 --> Active_State
+    Active_State --> D1 --> D2 --> Standby_State
+
+    classDef standby fill:#1f1315,stroke:#f85149,stroke-width:2px,color:#ffffff;
+    classDef trans fill:#1c1829,stroke:#bc8cff,stroke-width:1.5px,color:#ffffff;
+    classDef active fill:#0a2016,stroke:#2ea043,stroke-width:2px,color:#ffffff;
+    classDef guard fill:#2d1029,stroke:#e25a92,stroke-width:2px,color:#ffffff;
+
+    class S1,S2,S3 standby;
+    class T1,T2,T3,D1,D2 trans;
+    class A1,A2,A3 active;
+    class A4 guard;
 ```
 
 </details>
@@ -137,7 +173,7 @@ The debug APK will be generated at `mobile/build/outputs/apk/debug/mobile-debug.
 
 ## 📌 Project Status
 
-> [!TIP]
+> [!NOTE]
 > **Active Development / Prototype:** VoidCrypt is currently a functional prototype and active work-in-progress. New stealth enhancements, UI refinements, and protocol optimizations are continuously being implemented.
 
 ---
