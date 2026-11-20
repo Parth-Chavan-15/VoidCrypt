@@ -41,6 +41,13 @@
     </tr>
   </table>
 
+  <p align="center">
+    <br>
+    <img src="docs/assets/ui_preview.png" alt="VoidCrypt Stealth AMOLED Interface" width="280" style="border-radius: 28px; box-shadow: 0 12px 40px rgba(226, 90, 146, 0.25);" />
+    <br>
+    <sub><i>VoidCrypt Cyber-Minimalist AMOLED HUD (One-Tap Nexus & Live Telemetry)</i></sub>
+  </p>
+
 </div>
 
 ---
