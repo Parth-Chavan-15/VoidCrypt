@@ -11,7 +11,7 @@
   </p>
 
   <p align="center">
-    <img src="https://img.shields.io/badge/Project_Status-Work_In_Progress-orange?style=for-the-badge" alt="Status: WIP" />
+    <img src="https://img.shields.io/badge/Security-Hardened_Nexus-blueviolet?style=for-the-badge&logo=shield&logoColor=white" alt="Security: Hardened" />
     <img src="https://img.shields.io/badge/Fork_Base-shadowsocks--android_v5.3.5-brightgreen?style=for-the-badge&logo=git&logoColor=white" alt="Fork Base" />
     <img src="https://img.shields.io/badge/Platform-Android_8.0+-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Platform" />
     <img src="https://img.shields.io/badge/Crypto-ChaCha20--Poly1305_AEAD-e25a92?style=for-the-badge&logo=shield&logoColor=white" alt="Crypto" />
@@ -77,7 +77,7 @@ VoidCrypt is built upon the open-source **shadowsocks-android** (v5.3.5) codebas
 > **Interactive Architecture Blueprints:** Click the sections below to expand full-color diagrams illustrating kernel-level split-tunneling and the live tunnel safety lock.
 
 <details>
-<summary><b>🔍 Expand Flowchart: Traffic & Split-Tunneling Pipeline</b></summary>
+<summary>🌐 <b>Flowchart: Traffic & Split-Tunneling Pipeline</b></summary>
 
 ```mermaid
 flowchart TD
@@ -130,7 +130,7 @@ flowchart TD
 </details>
 
 <details>
-<summary><b>🔍 Expand Flowchart: Tunnel Lifecycle & UI Safety Lock</b></summary>
+<summary>🔒 <b>Flowchart: Tunnel Lifecycle & UI Safety Lock</b></summary>
 
 ```mermaid
 flowchart TD
@@ -198,13 +198,6 @@ cd VoidCrypt
 ```
 
 The debug APK will be generated at `mobile/build/outputs/apk/debug/mobile-debug.apk`.
-
----
-
-## 📌 Project Status
-
-> [!NOTE]
-> **Active Development / Prototype:** VoidCrypt is currently a functional prototype and active work-in-progress. New stealth enhancements, UI refinements, and protocol optimizations are continuously being implemented.
 
 ---
 
