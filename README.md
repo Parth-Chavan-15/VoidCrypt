@@ -6,17 +6,40 @@
   ### **Application-Layer Network Interceptor & Stealth Tunnel**
 
   <p align="center">
-    <b>A zero-configuration Android networking client engineered for granular per-app split-tunneling and stealth proxying.</b><br>
-    Developed by <a href="https://github.com/Parth-Chavan-15"><b>Parth Chavan</b></a> as a security-focused fork of <a href="https://github.com/shadowsocks/shadowsocks-android">shadowsocks-android</a>.
+    <b>A high-performance Android split-tunneling client engineered for zero-configuration stealth proxying.</b><br>
+    Architected by <a href="https://github.com/Parth-Chavan-15"><b>Parth Chavan</b></a> as a security-hardened fork of <a href="https://github.com/shadowsocks/shadowsocks-android">shadowsocks-android</a>.
   </p>
 
   <p align="center">
     <img src="https://img.shields.io/badge/Project_Status-Work_In_Progress-orange?style=for-the-badge" alt="Status: WIP" />
     <img src="https://img.shields.io/badge/Fork_Base-shadowsocks--android_v5.3.5-brightgreen?style=for-the-badge&logo=git&logoColor=white" alt="Fork Base" />
     <img src="https://img.shields.io/badge/Platform-Android_8.0+-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Platform" />
-    <img src="https://img.shields.io/badge/Crypto-ChaCha20--Poly1305-e25a92?style=for-the-badge&logo=shield&logoColor=white" alt="Crypto" />
+    <img src="https://img.shields.io/badge/Crypto-ChaCha20--Poly1305_AEAD-e25a92?style=for-the-badge&logo=shield&logoColor=white" alt="Crypto" />
     <img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge&logo=gnu&logoColor=white" alt="License" />
   </p>
+
+  <table align="center" width="100%">
+    <tr>
+      <td width="50%">
+        <b>🚀 Zero-Config Nexus</b><br>
+        <sub>Permanently bound to a high-speed cloud node. Tap once to establish an encrypted tunnel.</sub>
+      </td>
+      <td width="50%">
+        <b>⚡ Omni-Scavenger Routing</b><br>
+        <sub>Direct in-memory split-tunneling bypassing SQLite latency and lock contention.</sub>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%">
+        <b>🛡️ Stealth OS Masking</b><br>
+        <sub>System notifications scrubbed under <i>"Encrypted Routing Active"</i> against shoulder-surfing.</sub>
+      </td>
+      <td width="50%">
+        <b>🔒 Dynamic Route Lock</b><br>
+        <sub>App Routing controls automatically locked & dimmed to 40% alpha during active tunnels.</sub>
+      </td>
+    </tr>
+  </table>
 
 </div>
 
@@ -24,20 +47,20 @@
 
 ## 👁️ Overview
 
-**VoidCrypt** is an application-layer network interceptor designed to solve a common problem with traditional VPNs: **global routing overhead**. 
+**VoidCrypt** is an application-layer network interceptor designed to eliminate the **global routing overhead** found in conventional VPNs.
 
-Standard VPNs force an entire device's traffic through an encrypted tunnel, creating high latency, battery drain, and bandwidth consumption for applications that don't need it. Additionally, typical clients expose server addresses in lockscreen notifications and require manual server configurations.
+Standard VPNs force an entire device's traffic through an encrypted tunnel, creating high latency, thermal throttling, and bandwidth waste for applications that don't require proxying. Additionally, typical clients expose server hostnames or IP addresses in lockscreen notifications and require complex manual configuration.
 
 VoidCrypt re-architects the Android networking pipeline into an **autonomous, zero-configuration stealth tool**:
-* Selectively routes targeted applications (e.g., video editing tools, browsers) through a dedicated cloud endpoint.
-* Leaves all remaining apps, background services, and games on direct local Wi-Fi/cellular networks for zero latency.
-* Protects privacy by permanently binding to a secure cloud nexus with zero setup required.
+* **Selective Application Routing:** Selectively routes targeted applications (e.g., video editing engines, browsers) through an isolated cloud endpoint.
+* **Zero Overhead for Local Traffic:** Leaves games, banking apps, streaming, and background services on direct local Wi-Fi/5G for native gigabit speed.
+* **Instant Out-of-the-Box Security:** Connects immediately to a dedicated cloud node running Dockerized Shadowsocks with ChaCha20-Poly1305 AEAD encryption.
 
 ---
 
 ## 🛠️ What Changed in This Fork
 
-VoidCrypt is built on top of the open-source **shadowsocks-android** (v5.3.5) codebase, heavily customized by **Parth Chavan** to create a focused, locked-down stealth client:
+VoidCrypt is built upon the open-source **shadowsocks-android** (v5.3.5) codebase, heavily modified by **Parth Chavan** into a specialized, single-purpose stealth client:
 
 * **🚀 Zero-Configuration Cloud Nexus:** Stripped out manual server configuration forms, QR code scanners, and profile import/export menus. The client is permanently hardcoded to a dedicated cloud endpoint with ChaCha20-Poly1305 AEAD encryption. Just tap the central button to connect.
 * **⚡ Omni-Scavenger In-Memory Split-Tunneling:** Re-engineered the underlying routing service. Instead of relying on slow database queries that can cause split-tunnel desynchronization during startup, VoidCrypt pulls routing rules directly from in-memory application preferences with multi-delimiter parsing and automatic loopback prevention.
@@ -51,37 +74,57 @@ VoidCrypt is built on top of the open-source **shadowsocks-android** (v5.3.5) co
 ## 🧩 Architecture & Flowcharts
 
 > [!TIP]
-> **Interactive Architecture Blueprints:** Click the diagrams below to expand full-color flowcharts detailing kernel-level split-tunneling and the live tunnel safety lock.
+> **Interactive Architecture Blueprints:** Click the sections below to expand full-color diagrams illustrating kernel-level split-tunneling and the live tunnel safety lock.
 
 <details>
 <summary><b>🔍 Expand Flowchart: Traffic & Split-Tunneling Pipeline</b></summary>
 
 ```mermaid
 flowchart TD
-    App["📱 Device Applications"] --> Filter{"⚡ Omni-Scavenger Filter<br><i>(In-Memory App Rules)</i>"}
-    
-    Filter -- "Unselected Apps (Games, Media, Banking)" --> Direct["🚀 Direct Local Network<br><i>(Zero Latency / Full Wi-Fi Speed)</i>"]
-    Filter -- "Selected Apps (Targeted Tools)" --> Tun["🛡️ Virtual TUN Interface<br><i>(Android tun0 Adapter)</i>"]
-    
-    Tun --> Native["⚙️ Native Engine (C++ / Rust)<br><i>(tun2socks + sslocal)</i>"]
-    Native -->|"🔐 ChaCha20-Poly1305 Encrypted Stream"| Cloud["☁️ Dedicated Cloud Nexus Node<br><i>(AWS EC2)</i>"]
-    Cloud --> Internet["🌐 Target Web Services"]
+    subgraph INGRESS["📱 Device Traffic"]
+        APP["📱 Installed Android Apps<br/><i>(All network-bound application traffic)</i>"]
+    end
 
-    classDef appStyle fill:#161b22,stroke:#58a6ff,stroke-width:2px,color:#ffffff;
-    classDef filterStyle fill:#28103a,stroke:#e25a92,stroke-width:2.5px,color:#ffffff;
-    classDef directStyle fill:#0d2818,stroke:#2ea043,stroke-width:2px,color:#ffffff;
-    classDef tunStyle fill:#141738,stroke:#7952ff,stroke-width:2px,color:#ffffff;
-    classDef nativeStyle fill:#1f1338,stroke:#bc52ff,stroke-width:2px,color:#ffffff;
-    classDef cloudStyle fill:#2d1700,stroke:#ff9900,stroke-width:2px,color:#ffffff;
-    classDef netStyle fill:#041c2c,stroke:#00d2ff,stroke-width:2px,color:#ffffff;
+    subgraph ENGINE["⚡ Omni-Scavenger Router"]
+        FILTER{"⚡ Split-Tunnel Filter<br/><i>(In-Memory App Rules)</i>"}
+    end
 
-    class App appStyle;
-    class Filter filterStyle;
-    class Direct directStyle;
-    class Tun tunStyle;
-    class Native nativeStyle;
-    class Cloud cloudStyle;
-    class Internet netStyle;
+    subgraph PATHS["🔀 Dual Routing Pathways"]
+        DIRECT["🚀 Direct Local Gateway<br/><b>Bypassed Apps</b> <i>(Games, Banking, Media)</i><br/>• Full Wi-Fi / 5G speed<br/>• Zero latency overhead"]
+        TUN["🛡️ Virtual TUN Interface<br/><b>Selected Apps</b> <i>(Targeted Tools)</i><br/>• Android tun0 adapter<br/>• L3 IP packet capture"]
+    end
+
+    subgraph CORE["⚙️ Native Cryptographic Core"]
+        NATIVE["⚙️ Native C++ & Rust Daemons<br/>• <b>tun2socks:</b> L3 to SOCKS5 translation<br/>• <b>sslocal:</b> ChaCha20-Poly1305 encryption"]
+    end
+
+    subgraph CLOUD["☁️ Cloud Nexus"]
+        NODE["☁️ Dedicated Cloud Nexus Node<br/><i>(AWS Cloud Instance)</i><br/>• Secure decapsulation & forward"]
+        WEB["🌐 Target Web Services"]
+    end
+
+    APP --> FILTER
+    FILTER -->|"Unselected (Bypassed)"| DIRECT
+    FILTER -->|"Selected (Proxied)"| TUN
+    TUN --> NATIVE
+    NATIVE -->|"ChaCha20-Poly1305 Stream"| NODE
+    NODE --> WEB
+
+    classDef ingress fill:#121d2f,stroke:#388bfd,stroke-width:2px,color:#ffffff;
+    classDef filter fill:#2d1238,stroke:#e25a92,stroke-width:2px,color:#ffffff;
+    classDef direct fill:#0f2d1e,stroke:#2ea043,stroke-width:2px,color:#ffffff;
+    classDef tun fill:#1c173b,stroke:#a371f7,stroke-width:2px,color:#ffffff;
+    classDef core fill:#231942,stroke:#bc52ff,stroke-width:2px,color:#ffffff;
+    classDef cloud fill:#2d1a00,stroke:#ff9900,stroke-width:2px,color:#ffffff;
+    classDef web fill:#082435,stroke:#00d2ff,stroke-width:2px,color:#ffffff;
+
+    class APP ingress;
+    class FILTER filter;
+    class DIRECT direct;
+    class TUN tun;
+    class NATIVE core;
+    class NODE cloud;
+    class WEB web;
 ```
 
 </details>
@@ -91,42 +134,29 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    subgraph Standby_State["🔴 State: Standby (Idle)"]
-        S1["📱 Obsidian AMOLED HUD Ready"]
-        S2["App Routing Card: ENABLED (Alpha 1.0)"]
-        S3["Telemetry: 0 B/s Idle"]
-    end
+    STANDBY["🔴 Standby (Idle State)<br/>━━━━━━━━━━━━━━━━━━━━━<br/>• Obsidian AMOLED HUD Ready<br/>• App Routing Card: <b>ENABLED</b><br/>• Network Telemetry: <b>0 B/s</b>"]
+    
+    STANDBY -->|"👆 User Taps Central Nexus Button"| CONNECT["⚡ Initializing Tunnel<br/>━━━━━━━━━━━━━━━━━━━━━<br/>• Inject in-memory split-tunnel rules<br/>• Pass TUN file descriptor via libancillary<br/>• Launch native tun2socks & sslocal daemons"]
+    
+    CONNECT --> ACTIVE["🟢 Encrypted Tunnel Active<br/>━━━━━━━━━━━━━━━━━━━━━<br/>• ChaCha20-Poly1305 encryption live<br/>• System notification: 'Encrypted Routing Active'<br/>• Live Tx / Rx bandwidth streaming"]
+    
+    ACTIVE --> GUARD["🔒 Active Route Safety Guard<br/>━━━━━━━━━━━━━━━━━━━━━<br/>• App Routing Card <b>LOCKED & DIMMED (40% Alpha)</b><br/>• Prevents in-flight routing table corruption"]
+    
+    GUARD -->|"👆 User Taps Button to Disconnect"| TEARDOWN["🛑 Teardown & Cleanup<br/>━━━━━━━━━━━━━━━━━━━━━<br/>• SIGKILL native process pool<br/>• Close virtual TUN adapter<br/>• Persist traffic statistics"]
+    
+    TEARDOWN --> STANDBY
 
-    subgraph Transition_1["⚡ One-Tap Connect Transition"]
-        T1["👆 User Taps Central Nexus FAB"]
-        T2["⚙️ VpnService Direct-Memory Rule Injection"]
-        T3["🔐 Passing TUN FD to Native C++ tun2socks & Rust sslocal"]
-    end
+    classDef standby fill:#241417,stroke:#f85149,stroke-width:2px,color:#ffffff;
+    classDef connect fill:#1e1a38,stroke:#a371f7,stroke-width:2px,color:#ffffff;
+    classDef active fill:#0d261a,stroke:#2ea043,stroke-width:2px,color:#ffffff;
+    classDef guard fill:#33112a,stroke:#e25a92,stroke-width:2.5px,color:#ffffff;
+    classDef teardown fill:#261821,stroke:#d29922,stroke-width:2px,color:#ffffff;
 
-    subgraph Active_State["🟢 State: Encrypted Tunnel Active"]
-        A1["🛡️ ChaCha20-Poly1305 Cryptographic Tunnel Live"]
-        A2["🔏 Notification Masked: 'Encrypted Routing Active'"]
-        A3["📊 Real-Time Throughput Telemetry Streaming (Tx/Rx)"]
-        A4["🔒 ACTIVE SAFETY GUARD: App Routing Card LOCKED & DIMMED (40% Alpha)"]
-    end
-
-    subgraph Transition_2["🛑 Disconnect Transition"]
-        D1["👆 User Taps Nexus FAB or System Revokes VPN"]
-        D2["Process Pool SIGKILL & File Descriptor Teardown"]
-    end
-
-    Standby_State --> T1 --> T2 --> T3 --> Active_State
-    Active_State --> D1 --> D2 --> Standby_State
-
-    classDef standby fill:#1f1315,stroke:#f85149,stroke-width:2px,color:#ffffff;
-    classDef trans fill:#1c1829,stroke:#bc8cff,stroke-width:1.5px,color:#ffffff;
-    classDef active fill:#0a2016,stroke:#2ea043,stroke-width:2px,color:#ffffff;
-    classDef guard fill:#2d1029,stroke:#e25a92,stroke-width:2px,color:#ffffff;
-
-    class S1,S2,S3 standby;
-    class T1,T2,T3,D1,D2 trans;
-    class A1,A2,A3 active;
-    class A4 guard;
+    class STANDBY standby;
+    class CONNECT connect;
+    class ACTIVE active;
+    class GUARD guard;
+    class TEARDOWN teardown;
 ```
 
 </details>
